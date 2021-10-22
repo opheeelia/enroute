@@ -1,2 +1,4 @@
 .idea/
 .env
+client/dist/bundle.js
+node_modules/

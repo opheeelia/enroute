@@ -18,7 +18,6 @@ const GOOGLE_CLIENT_ID = "121479668229-t5j82jrbi9oejh7c8avada226s75bopn.apps.goo
 class Skeleton extends Component {
     constructor(props) {
         super(props);
-        console.log(process.env.REACT_APP_GOOGLE_API_KEY);
         Geocode.setApiKey(process.env.REACT_APP_GOOGLE_API_KEY);
 
         // Initialize Default State
@@ -45,6 +44,7 @@ class Skeleton extends Component {
     updateRoute = async (newDir) => {
         // updates the notable stops (cities stopping at) by looking through the directions
         let notableStops = await newDir.routes[0].legs.flatMap(async (leg) => {
+            console.log(leg);
             let routeStops = await leg.steps.reduce(async (stopList, step) => {
                 stopList = await stopList;
                 let prevStep = stopList[stopList.length -1];
