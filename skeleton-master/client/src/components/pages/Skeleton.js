@@ -4,10 +4,12 @@ import Map from "../modules/map";
 /* global google*/
 
 import "../../utilities.css";
+import "../../utilities";
 import "./Skeleton.css";
 import TripInput from "../modules/TripInput";
 import Geocode from "react-geocode";
 import Weather from "../modules/Weather";
+import {sameCity} from "../../utilities";
 
 
 // //TODO: REPLACE WITH YOUR OWN CLIENT_ID
@@ -16,14 +18,15 @@ const GOOGLE_CLIENT_ID = "121479668229-t5j82jrbi9oejh7c8avada226s75bopn.apps.goo
 class Skeleton extends Component {
     constructor(props) {
         super(props);
+        console.log(process.env.REACT_APP_GOOGLE_API_KEY);
+        Geocode.setApiKey(process.env.REACT_APP_GOOGLE_API_KEY);
 
-        Geocode.setApiKey("AIzaSyC-VbONRxsVcwEZYcPwfEsoBtRecgHOuU4");
         // Initialize Default State
         this.state = {
-            stops: [{id: 0, address: "", latlng: new google.maps.LatLng(41.8507300, -87.6512600)},
-                {id: 1, address: "", latlng: new google.maps.LatLng(41.8525800, -87.6514100)}],
+            stops: [{id: 0, address: "", latlng: new google.maps.LatLng(41.8507300, -87.6512600), durationHr: 24},
+                {id: 1, address: "", latlng: new google.maps.LatLng(41.8525800, -87.6514100), durationHr: 24}],
             notableStops: [],
-            start: Date.now()
+            start: Date.now().valueOf()
         };
     }
 
@@ -32,7 +35,7 @@ class Skeleton extends Component {
     }
 
     updateStart = (newStart) => {
-        this.setState({start: newStart});
+        this.setState({start: newStart.target.value.split(".")[0]});
     }
 
     updateStops = (newState) => {
@@ -41,8 +44,10 @@ class Skeleton extends Component {
 
     updateRoute = async (newDir) => {
         // updates the notable stops (cities stopping at) by looking through the directions
-        let notableStops = await newDir.routes[0].legs.map(async (leg) => {
-            let duplicatedStops = await leg.steps.flatMap(async (step) => {
+        let notableStops = await newDir.routes[0].legs.flatMap(async (leg) => {
+            let routeStops = await leg.steps.reduce(async (stopList, step) => {
+                stopList = await stopList;
+                let prevStep = stopList[stopList.length -1];
                 return await Geocode.fromLatLng(step.end_location.toJSON().lat, step.end_location.toJSON().lng).then(response => {
                         let city = "";
                         let state = "";
@@ -51,39 +56,40 @@ class Skeleton extends Component {
                             if (info.types.includes("administrative_area_level_1")) {
                                 state = info.short_name;
                             } else if (info.types.includes("locality") || info.types.includes("sublocality")) {
-                                city = info.short_name;
+                                city = info.long_name;
                             } else if (info.types.includes("country")) {
                                 country = info.short_name;
                             }
                         });
                         if (city != "" && state != "" && country != "") {
-                            return {
+                            let val = (prevStep != null) ? prevStep.elapsedSec : 0;
+                            stopList.push({
                                 city: city,
                                 state: state,
                                 country: country,
                                 lat: step.end_location.toJSON().lat,
                                 lng: step.end_location.toJSON().lng,
-                                duration: step.duration.value
-                            };
+                                elapsedSec: step.duration.value + val
+                            });
                         }
+                        return stopList;
                     },
                     error => {
                         console.error(error);
                     });
-            });
+            }, [null]);
 
-            return Promise.all(duplicatedStops).then((stops) => {
-                let deduplicatedStops = [];
-                // TODO: better way to dedup?
-                for (const i in stops) {
-                    if (stops[i] != null){
-                        if (!deduplicatedStops.some((otherStop) => stops[i].city == otherStop.city && stops[i].state == otherStop.state && stops[i].country == otherStop.country)) {
-                            deduplicatedStops.push(stops[i]);
-                        }
-                    }
+            routeStops.splice(0,1);
+            let currIndex = 0;
+            while (currIndex < routeStops.length - 1){
+                if (sameCity(routeStops[currIndex], routeStops[currIndex+1])){
+                    routeStops.splice(currIndex, 1);
+                } else {
+                    currIndex++;
                 }
-                return deduplicatedStops;
-            });
+            }
+
+            return routeStops;
         });
 
         Promise.all(notableStops).then((stops) => {
@@ -116,7 +122,12 @@ class Skeleton extends Component {
                     />)}
                 {this.props.userId ?
                     <div className="main-body">
-                        <TripInput submitStops={this.updateStops} stops={this.state.stops}/>
+                        <TripInput
+                            updateStops={this.updateStops}
+                            updateStart={this.updateStart}
+                            stops={this.state.stops}
+                            start={this.state.start}
+                        />
                         <Weather notableStops={this.state.notableStops}/>
                         <div className="mapContainer">
                             <Map stops={this.state.stops} updateDirections={this.updateRoute}/>

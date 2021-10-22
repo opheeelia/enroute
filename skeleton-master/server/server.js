@@ -27,13 +27,12 @@ const path = require("path"); // provide utilities for working with file and dir
 
 const api = require("./api");
 const auth = require("./auth");
+require('dotenv').config();
 
 
 // Server configuration below
-// TODO change connection URL after setting up your team database
 const databaseName = "enrouteDatabase";
-const mongoConnectionURL = `mongodb+srv://master:GyIZD2RJfEIejWLm@mongocluster.6wddr.mongodb.net/${databaseName}?retryWrites=true&w=majority`;
-// TODO change database name to the name you chose
+const mongoConnectionURL = process.env.ATLAS_SRV;
 
 // connect to mongodb
 mongoose

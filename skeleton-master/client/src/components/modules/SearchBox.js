@@ -8,6 +8,7 @@ class SearchBox extends Component{
         super(props);
         this.state = {
             address: this.props.address,
+            durationHr: this.props.durationHr
         };
     }
 
@@ -20,12 +21,24 @@ class SearchBox extends Component{
     }
 
     handleChange = address => {
-        this.setState({ address });
+        this.setState({address: address });
     };
 
     handleSelect = address => {
-        this.setState({address});
+        this.setState({address: address});
         this.props.handleSelect(this.props.stopKey, address);
+    };
+
+    incrDuration = () => {
+        let newValue = this.state.durationHr + 1;
+        this.setState({durationHr: newValue});
+        this.props.handleSetDuration(this.props.stopKey, newValue);
+    };
+
+    decrDuration = () => {
+        let newValue = Math.max(1, this.state.durationHr - 1);
+        this.setState({durationHr: newValue});
+        this.props.handleSetDuration(this.props.stopKey, newValue);
     };
 
     // onPlaceSelected = place => {
@@ -79,6 +92,7 @@ class SearchBox extends Component{
                       </div>
                     )}
                 </PlacesAutocomplete>
+                <p>{this.state.durationHr}</p> <button onClick={this.incrDuration}>+</button> <button onClick={this.decrDuration}>-</button>
                 <button onClick={()=>this.props.deleteStop(this.props.stopKey)}>Remove Stop</button>
             </div>
         );

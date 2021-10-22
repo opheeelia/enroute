@@ -19,7 +19,7 @@
 const path = require("path");
 const entryFile = path.resolve(__dirname, "client", "src", "index.js");
 const outputDir = path.resolve(__dirname, "client", "dist");
-
+const Dotenv = require('dotenv-webpack');
 const webpack = require("webpack");
 
 module.exports = {
@@ -61,7 +61,7 @@ module.exports = {
   resolve: {
     extensions: ["*", ".js", ".jsx"],
   },
-  plugins: [new webpack.HotModuleReplacementPlugin()],
+  plugins: [new Dotenv, new webpack.HotModuleReplacementPlugin()],
   devServer: {
     historyApiFallback: true,
     contentBase: "./client/dist",

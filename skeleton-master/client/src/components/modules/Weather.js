@@ -14,7 +14,7 @@ class Weather extends Component{
         let notableStops = this.props.notableStops.map((waypoint) =>
             waypoint.map((loc) => {
                 // get("/api/weather", {lat: loc.lat, lon: loc.lng}).then(r =>console.log(r));
-                return <p>{loc.city + ", " + loc.state + ", " + loc.country}</p>;
+                return <p>{loc.city + ", " + loc.state + ", " + loc.country + ":" + loc.elapsedSec}</p>;
             })
         );
 

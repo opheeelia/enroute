@@ -10,17 +10,25 @@ class TripInput extends Component {
         super(props);
 
         this.state = {
+            defaultDurationHr: 24,
             stopCounter: 2,
             waypoints: this.props.stops.slice(),
         };
     }
 
+    setDDefaultDuration = (newDefaultDuration) => {
+      this.setState({
+          defaultDurationHr: newDefaultDuration
+      });
+      //TODO: update all of the stops to have default value
+    };
+
     addStop = () => {
-        if (this.state.stopCounter < TripInput.MAX_STOPS) {
+        if (this.state.waypoints.length < TripInput.MAX_STOPS) {
             let boxId = this.state.stopCounter;
             this.setState({
                 stopCounter: boxId + 1,
-                waypoints: this.state.waypoints.concat([{id: boxId, address: "", latlng: null,}])
+                waypoints: this.state.waypoints.concat([{id: boxId, address: "", latlng: null, durationHr: this.state.defaultDurationHr}])
             });
         } else {
 
@@ -50,6 +58,12 @@ class TripInput extends Component {
             .catch(error => console.error('Error', error));
     };
 
+    handleSetDuration = (boxKey, durationHr) => {
+        let stops = this.state.waypoints;
+        stops[boxKey].durationHr = durationHr;
+        this.setState({waypoints: stops});
+    };
+
     render() {
 
         let searchBoxList = this.state.waypoints.map((stop, key) => (
@@ -57,25 +71,33 @@ class TripInput extends Component {
                        address={stop.address}
                        deleteStop={this.deleteStop}
                        handleSelect={this.handleSelect}
+                       handleSetDuration={this.handleSetDuration}
+                       durationHr={stop.durationHr}
             />));
 
         let today = new Date(Date.now());
         const offset = today.getTimezoneOffset();
         today = new Date(today.getTime() - (offset*60*1000));
-        let todayString = today.toISOString().split('T')[0].replaceAll("/", "-");
-        today.setDate(today.getDate() + 14);
-        let twoWeeksString = today.toISOString().split('T')[0].replaceAll("/", "-");
+        let twoWeeks = new Date(today.valueOf() + 14*24*60*60*1000);
+
+        // string versions to put
+        let chosenStartString = new Date(this.props.start).toISOString().split(".")[0];
+        let todayString = today.toISOString().split(".")[0];
+        let twoWeeksString = twoWeeks.toISOString().split(".")[0];
 
         return (
             <div className="user-input">
-                <input type="date" id="start" name="trip-start"
-                       value={todayString}
-                       min={todayString}
-                       max={twoWeeksString}
+                <p>Start Date of Trip:</p>
+                <input type="datetime-local" id="start" name="trip-start"
+                       value={chosenStartString.substring(0,chosenStartString.length-3)}
+                       min={todayString.substring(0,todayString.length-3)}
+                       max={twoWeeksString.substring(0,twoWeeksString.length-3)}
+                       onChange={this.props.updateStart}
                    />
+                <br></br>
                 <button onClick={this.addStop}>Add stop</button>
                 {searchBoxList}
-                <button onClick={() => this.props.submitStops(this.state.waypoints)}>Submit!</button>
+                <button onClick={() => this.props.updateStops(this.state.waypoints)}>Submit!</button>
             </div>);
     }
 }

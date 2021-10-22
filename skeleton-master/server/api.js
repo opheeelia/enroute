@@ -36,7 +36,7 @@ function convertToJSON(res) {
 }
 
 router.get("/weather", (req, res) => {
-  fetch(`https://api.weatherbit.io/v2.0/forecast/daily?key=952d79a30dc14898a565d546c0b5b019&lat=${req.query.lat}&lon=${req.query.lon}`)
+  fetch(`https://api.weatherbit.io/v2.0/forecast/daily?key=${process.env.WEATHER_API_KEY}&lat=${req.query.lat}&lon=${req.query.lon}`)
       .then(convertToJSON).then((resp)=>{
         res.send(resp);
       });

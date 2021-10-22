@@ -61,3 +61,7 @@ export function post(endpoint, params = {}) {
       throw `POST request to ${endpoint} failed with error:\n${error}`;
     });
 }
+
+export function sameCity(city1, city2) {
+    return city1.city === city2.city && city1.state === city2.state && city1.country === city2.country;
+}

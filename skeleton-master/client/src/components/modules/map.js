@@ -18,17 +18,13 @@ class Map extends Component{
     // }
 
     shouldComponentUpdate(prevProps, prevState){
-        console.log(this.props.stops);
-        console.log(prevProps.stops);
-        console.log(this.props.stops != prevProps.stops);
         return (this.props.stops != prevProps.stops);
     }
 
     render(){
-        console.log(this.props.stops);
         const WrappedMap = compose(
             withProps({
-                googleMapURL: "https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=geometry,drawing,places&key=AIzaSyC-VbONRxsVcwEZYcPwfEsoBtRecgHOuU4",
+                googleMapURL: `https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=geometry,drawing,places&key=${process.env.REACT_APP_GOOGLE_API_KEY}`,
                 loadingElement: <div style={{ height: `100%` }} />,
                 containerElement: <div style={{ height: `600px` }} />,
                 mapElement: <div style={{ height: `100%` }} />,
