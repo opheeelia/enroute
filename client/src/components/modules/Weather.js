@@ -10,12 +10,10 @@ class Weather extends Component{
     }
 
     render(){
-
-        let notableStops = this.props.notableStops.map((waypoint) =>
-            waypoint.map((loc) => {
+        let notableStops = this.props.notableStops.map((loc) => {
                 // get("/api/weather", {lat: loc.lat, lon: loc.lng}).then(r =>console.log(r));
-                return <p>{loc.city + ", " + loc.state + ", " + loc.country + ":" + loc.elapsedSec}</p>;
-            })
+                return <p>{loc.city + ", " + loc.state + ", " + loc.country + ": " + new Date(loc.elapsedSec * 1000).toString()}</p>;
+            }
         );
 
         return (

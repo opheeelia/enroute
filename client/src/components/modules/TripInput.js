@@ -79,10 +79,10 @@ class TripInput extends Component {
         const offset = today.getTimezoneOffset();
         today = new Date(today.getTime() - (offset*60*1000));
         let twoWeeks = new Date(today.valueOf() + 14*24*60*60*1000);
-
         // string versions to put
-        let chosenStartString = new Date(this.props.start).toISOString().split(".")[0];
+        let chosenStartString = new Date(this.props.start  - (offset*60*1000)).toISOString().split(".")[0];
         let todayString = today.toISOString().split(".")[0];
+
         let twoWeeksString = twoWeeks.toISOString().split(".")[0];
 
         return (

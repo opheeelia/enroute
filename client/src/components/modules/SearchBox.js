@@ -78,7 +78,7 @@ class SearchBox extends Component{
                               ? { backgroundColor: '#fafafa', cursor: 'pointer' }
                               : { backgroundColor: '#ffffff', cursor: 'pointer' };
                             return (
-                              <div
+                              <div key={suggestion}
                                 {...getSuggestionItemProps(suggestion, {
                                   className,
                                   style,

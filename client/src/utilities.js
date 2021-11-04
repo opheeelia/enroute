@@ -65,3 +65,15 @@ export function post(endpoint, params = {}) {
 export function sameCity(city1, city2) {
     return city1.city === city2.city && city1.state === city2.state && city1.country === city2.country;
 }
+
+// mutates notableStops to remove duplicates
+export function removeConsecutiveDuplicates(notableStops){
+    let currIndex = 0;
+    while (currIndex < notableStops.length - 1){
+        if (sameCity(notableStops[currIndex], notableStops[currIndex+1])){
+            notableStops.splice(currIndex, 1);
+        } else {
+            currIndex++;
+        }
+    }
+}

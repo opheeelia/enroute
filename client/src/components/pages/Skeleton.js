@@ -4,12 +4,11 @@ import Map from "../modules/map";
 /* global google*/
 
 import "../../utilities.css";
-import "../../utilities";
 import "./Skeleton.css";
 import TripInput from "../modules/TripInput";
 import Geocode from "react-geocode";
 import Weather from "../modules/Weather";
-import {sameCity} from "../../utilities";
+import {removeConsecutiveDuplicates, sameCity} from "../../utilities";
 
 
 // //TODO: REPLACE WITH YOUR OWN CLIENT_ID
@@ -22,7 +21,7 @@ class Skeleton extends Component {
 
         // Initialize Default State
         this.state = {
-            stops: [{id: 0, address: "", latlng: new google.maps.LatLng(41.8507300, -87.6512600), durationHr: 24},
+            stops: [{id: 0, address: "", latlng: new google.maps.LatLng(41.8507300, -87.6512600), durationHr: 0}, //TODO: always ensure the first one has duration 0
                 {id: 1, address: "", latlng: new google.maps.LatLng(41.8525800, -87.6514100), durationHr: 24}],
             notableStops: [],
             start: Date.now().valueOf()
@@ -42,9 +41,12 @@ class Skeleton extends Component {
     };
 
     updateRoute = async (newDir) => {
+        let index = 0;
         // updates the notable stops (cities stopping at) by looking through the directions
-        let notableStops = await newDir.routes[0].legs.flatMap(async (leg) => {
-            console.log(leg);
+        let notableStops = await newDir.routes[0].legs.reduce(async (prevLeg, leg) => {
+            prevLeg = await prevLeg;
+            let prevLegElapsedSec = this.state.stops[index].durationHr * 60 * 60 + prevLeg[prevLeg.length - 1].elapsedSec;
+            // get which stop this corresponds to and make a constant on how long to stay
             let routeStops = await leg.steps.reduce(async (stopList, step) => {
                 stopList = await stopList;
                 let prevStep = stopList[stopList.length -1];
@@ -62,14 +64,13 @@ class Skeleton extends Component {
                             }
                         });
                         if (city != "" && state != "" && country != "") {
-                            let val = (prevStep != null) ? prevStep.elapsedSec : 0;
                             stopList.push({
                                 city: city,
                                 state: state,
                                 country: country,
                                 lat: step.end_location.toJSON().lat,
                                 lng: step.end_location.toJSON().lng,
-                                elapsedSec: step.duration.value + val
+                                elapsedSec: step.duration.value + prevStep.elapsedSec
                             });
                         }
                         return stopList;
@@ -77,21 +78,17 @@ class Skeleton extends Component {
                     error => {
                         console.error(error);
                     });
-            }, [null]);
+            }, [{elapsedSec: prevLegElapsedSec}]);
 
+            index++;
             routeStops.splice(0,1);
-            let currIndex = 0;
-            while (currIndex < routeStops.length - 1){
-                if (sameCity(routeStops[currIndex], routeStops[currIndex+1])){
-                    routeStops.splice(currIndex, 1);
-                } else {
-                    currIndex++;
-                }
-            }
+            removeConsecutiveDuplicates(routeStops);
+            prevLeg.push(...routeStops);
+            return prevLeg;
+        }, [{elapsedSec: ~~(this.state.start / 1000)}]);
 
-            return routeStops;
-        });
-
+        notableStops.splice(0,1);
+        removeConsecutiveDuplicates(notableStops);
         Promise.all(notableStops).then((stops) => {
             this.setState({
                  notableStops: stops,
