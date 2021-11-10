@@ -36,15 +36,24 @@ function convertToJSON(res) {
     });
 }
 
-function findWeather(){
-
+function findWeather(lat, lon, datetime){
+    let beginDt = new Date(datetime.valueOf());
+    beginDt.setHours(0, 0, 0, 0);
+    let endDt = new Date(beginDt.valueOf());
+    endDt.setDate(beginDt.getDate() + 1);
+    return Weather.findOne({lat: lat, lon: lon, datetime: {$gte: datetime, $lte: endDt}});
 }
 
-router.get("/weather", (req, res) => {
-    // TODO: cache into db
-
+router.get("/weather", async (req, res) => {
     let lat = req.query.lat;
     let lon = req.query.lon;
+    let desiredDt = new Date(parseInt(req.query.dateTime));
+    let cachedData = await findWeather(lat, lon, desiredDt);
+    if (cachedData != null){
+        res.send({snow: cachedData.snow, precip: cachedData.precip});
+        return;
+    }
+
     fetch(`https://api.weatherbit.io/v2.0/forecast/daily?key=${process.env.WEATHER_API_KEY}&lat=${lat}&lon=${lon}`)
         .then(convertToJSON).then((resp) => {
             // cache all responses into the database
@@ -62,7 +71,7 @@ router.get("/weather", (req, res) => {
                 newWeather.save();
             });
             // extract the appropriate date and send TODO: assert that index > 0 and < 16
-            let index = new Date(Date.now()).getDate() - new Date(parseInt(req.query.dateTime)).getDate();
+            let index = new Date(Date.now()).getDate() - desiredDt.getDate();
             res.send({snow: resp.data[index].snow, precip: resp.data[index].precip});
         }).catch((error) => {
             // try other api
@@ -84,7 +93,7 @@ router.get("/weather", (req, res) => {
                     });
 
                     // extract the appropriate date and send TODO: assert that index > 0 and < 7
-                    let index = new Date(Date.now()).getDate() - new Date(parseInt(req.query.dateTime)).getDate();
+                    let index = new Date(Date.now()).getDate() - desiredDt.getDate();
                     res.send({snow: resp.daily[index].snow, precip: resp.daily[index].rain});
                 }).catch((error) => {
                     res.status(500).send({error: "Woops! Something went wrong"});
