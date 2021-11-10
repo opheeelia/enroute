@@ -77,3 +77,17 @@ export function removeConsecutiveDuplicates(notableStops){
         }
     }
 }
+
+// Calls the backend getWeather endpoint. returns {snow: #, precip: #}
+export function getWeather(lat, lon, dateTime, callback){
+    get("/api/weather",
+        {
+                    lat: Math.round(lat * 100) / 100,
+                    lon: Math.round(lon * 100) / 100,
+                    dateTime: dateTime
+                })
+        .then(r =>{
+            callback(r);
+        });
+
+}

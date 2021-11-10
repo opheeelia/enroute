@@ -7,7 +7,7 @@ import "../../utilities.css";
 import "./Skeleton.css";
 import TripInput from "../modules/TripInput";
 import Geocode from "react-geocode";
-import Weather from "../modules/Weather";
+import WeatherDisplay from "../modules/WeatherDisplay";
 import {removeConsecutiveDuplicates, sameCity} from "../../utilities";
 
 
@@ -125,7 +125,7 @@ class Skeleton extends Component {
                             stops={this.state.stops}
                             start={this.state.start}
                         />
-                        <Weather notableStops={this.state.notableStops}/>
+                        <WeatherDisplay notableStops={this.state.notableStops}/>
                         <div className="mapContainer">
                             <Map stops={this.state.stops} updateDirections={this.updateRoute}/>
                         </div>
