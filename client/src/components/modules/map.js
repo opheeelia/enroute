@@ -1,24 +1,46 @@
 import React, { Component } from "react";
 import {withGoogleMap, withScriptjs, GoogleMap, DirectionsRenderer} from "react-google-maps";
-import { compose, withProps, lifecycle } from "recompose";
+import { compose, withProps, lifecycle, shouldUpdate } from "recompose";
+import {objectEquals, arrayEquals} from "../../utilities";
 /* global google */
 
 class Map extends Component{
 
-    componentDidMount(){
-        console.log('mounting outside');
+    constructor(props) {
+        super(props);
+        this.state = {
+            directions: null
+        };
     }
 
-    // componentDidUpdate(){
-    //     this.setState({
-    //         stops: this.props.stops.slice(),
-    //     });
-    //     console.log('here too');
-    //     // console.log(this.props.stops[this.props.stops.length - 1].address);
-    // }
-
     shouldComponentUpdate(prevProps, prevState){
-        return (this.props.stops != prevProps.stops);
+        return !arrayEquals(prevProps.stops, this.props.stops) || !objectEquals(prevState.directions, this.state.directions);
+    }
+
+    componentDidUpdate(){
+        const DirectionsService = new google.maps.DirectionsService();
+
+        let routeReqData = this.props.stops.length <= 2 ? {
+            origin: this.props.stops[0].latlng,
+            destination: this.props.stops[this.props.stops.length-1].latlng,
+            travelMode: google.maps.TravelMode.DRIVING,
+        } : {
+            origin: this.props.stops[0].latlng,
+            waypoints: this.props.stops.slice(1,this.props.stops.length-1).map((point)=> ({location: point.latlng, stopover: true})),
+            destination: this.props.stops[this.props.stops.length-1].latlng,
+            travelMode: google.maps.TravelMode.DRIVING,
+        };
+
+        DirectionsService.route(routeReqData, (result, status) => {
+            if (status === google.maps.DirectionsStatus.OK) {
+                this.setState({
+                    directions: result,
+                });
+                this.props.updateDirections(result);
+            } else {
+                console.error(`error fetching directions ${result}`);
+            }
+        });
     }
 
     render(){
@@ -28,42 +50,10 @@ class Map extends Component{
                 loadingElement: <div style={{ height: `100%` }} />,
                 containerElement: <div style={{ height: `600px` }} />,
                 mapElement: <div style={{ height: `100%` }} />,
-                stops: this.props.stops.slice(),
-                updateDirections: (res) => this.props.updateDirections(res),
+                directions: this.state.directions
             }),
             withScriptjs,
-            withGoogleMap,
-            lifecycle({
-                componentDidMount(){
-                    // console.log('mounting inner');
-                    const DirectionsService = new google.maps.DirectionsService();
-                    // const stops = this.props.stops.slice();
-
-                    console.log(this.props.stops);
-
-                    let routeReqData = this.props.stops.length <= 2 ? {
-                        origin: this.props.stops[0].latlng,
-                        destination: this.props.stops[this.props.stops.length-1].latlng,
-                        travelMode: google.maps.TravelMode.DRIVING,
-                    } : {
-                        origin: this.props.stops[0].latlng,
-                        waypoints: this.props.stops.slice(1,this.props.stops.length-1).map((point)=> ({location: point.latlng, stopover: true})),
-                        destination: this.props.stops[this.props.stops.length-1].latlng,
-                        travelMode: google.maps.TravelMode.DRIVING,
-                    };
-
-                    DirectionsService.route(routeReqData, (result, status) => {
-                        if (status === google.maps.DirectionsStatus.OK) {
-                            this.setState({
-                                directions: result,
-                            });
-                            this.props.updateDirections(result);
-                        } else {
-                            console.error(`error fetching directions ${result}`);
-                        }
-                    });
-                },
-            })
+            withGoogleMap
             )(props =>
               <GoogleMap
                 defaultZoom={7}

@@ -8,7 +8,7 @@ import "./Skeleton.css";
 import TripInput from "../modules/TripInput";
 import Geocode from "react-geocode";
 import WeatherDisplay from "../modules/WeatherDisplay";
-import {removeConsecutiveDuplicates, sameCity} from "../../utilities";
+import {copyStops, removeConsecutiveDuplicates, sameCity} from "../../utilities";
 
 
 // //TODO: REPLACE WITH YOUR OWN CLIENT_ID
@@ -37,7 +37,7 @@ class Skeleton extends Component {
     }
 
     updateStops = (newState) => {
-        this.setState({stops: newState});
+        this.setState({stops: copyStops(newState)});
     };
 
     updateRoute = async (newDir) => {

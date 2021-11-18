@@ -1,6 +1,7 @@
 import React, {Component} from "react";
 import SearchBox from "../modules/SearchBox";
 import {geocodeByAddress, getLatLng} from "react-places-autocomplete";
+import {copyStops} from "../../utilities";
 
 class TripInput extends Component {
 
@@ -8,15 +9,14 @@ class TripInput extends Component {
 
     constructor(props) {
         super(props);
-
         this.state = {
             defaultDurationHr: 24,
             stopCounter: 2,
-            waypoints: this.props.stops.slice(),
+            waypoints: copyStops(this.props.stops),
         };
     }
 
-    setDDefaultDuration = (newDefaultDuration) => {
+    setDefaultDuration = (newDefaultDuration) => {
       this.setState({
           defaultDurationHr: newDefaultDuration
       });
@@ -31,7 +31,7 @@ class TripInput extends Component {
                 waypoints: this.state.waypoints.concat([{id: boxId, address: "", latlng: null, durationHr: this.state.defaultDurationHr}])
             });
         } else {
-
+            // TODO: popup message to tell user max stops reached
         }
     };
 

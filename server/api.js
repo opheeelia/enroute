@@ -50,9 +50,11 @@ router.get("/weather", async (req, res) => {
     let desiredDt = new Date(parseInt(req.query.dateTime));
     let cachedData = await findWeather(lat, lon, desiredDt);
     if (cachedData != null){
+        // console.log("cache hit at " + cachedData.lat + ", " + cachedData.lon)
         res.send({snow: cachedData.snow, precip: cachedData.precip});
         return;
     }
+    // console.log("miss at " + lat + ", " + lon)
 
     fetch(`https://api.weatherbit.io/v2.0/forecast/daily?key=${process.env.WEATHER_API_KEY}&lat=${lat}&lon=${lon}`)
         .then(convertToJSON).then((resp) => {
@@ -72,6 +74,7 @@ router.get("/weather", async (req, res) => {
             });
             // extract the appropriate date and send TODO: assert that index > 0 and < 16
             let index = new Date(Date.now()).getDate() - desiredDt.getDate();
+            // console.log("first api")
             res.send({snow: resp.data[index].snow, precip: resp.data[index].precip});
         }).catch((error) => {
             // try other api
@@ -94,6 +97,7 @@ router.get("/weather", async (req, res) => {
 
                     // extract the appropriate date and send TODO: assert that index > 0 and < 7
                     let index = new Date(Date.now()).getDate() - desiredDt.getDate();
+                    console.log("second api")
                     res.send({snow: resp.daily[index].snow, precip: resp.daily[index].rain});
                 }).catch((error) => {
                     res.status(500).send({error: "Woops! Something went wrong"});

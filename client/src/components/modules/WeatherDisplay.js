@@ -13,7 +13,7 @@ class WeatherDisplay extends Component{
     }
 
     render(){
-        let notableStops = this.props.notableStops.map((loc) => <WeatherTile loc={loc}/>);
+        let notableStops = this.props.notableStops.map((loc, i) => <WeatherTile loc={loc} key={i}/>);
 
         return (
             <div className="weather-block">
