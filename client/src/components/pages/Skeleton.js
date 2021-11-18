@@ -99,39 +99,53 @@ class Skeleton extends Component {
     render() {
         return (
             <>
-                <h1>enroute</h1>
-                <p>check to see if it will rain / snow any point on your route</p>
-                <p>type your destination in the search box below</p>
                 {this.props.userId ? (
-                    <GoogleLogout
-                        clientId={GOOGLE_CLIENT_ID}
-                        buttonText="Logout"
-                        onLogoutSuccess={this.props.handleLogout}
-                        onFailure={(err) => console.log(err)}
-                        className="NavBar-link NavBar-login"
-                    />) : (
-                    <GoogleLogin
-                        clientId={GOOGLE_CLIENT_ID}
-                        buttonText="Login"
-                        onSuccess={this.props.handleLogin}
-                        onFailure={(err) => console.log(err)}
-                        className="NavBar-link NavBar-login"
-                    />)}
-                {this.props.userId ?
-                    <div className="main-body">
-                        <TripInput
-                            updateStops={this.updateStops}
-                            updateStart={this.updateStart}
-                            stops={this.state.stops}
-                            start={this.state.start}
-                        />
-                        <WeatherDisplay notableStops={this.state.notableStops}/>
-                        <div className="mapContainer">
-                            <Map stops={this.state.stops} updateDirections={this.updateRoute}/>
+                    <div>
+                        <nav className="navbar fixed-top px-4">
+                            <h2 className="fw-bold">enroute</h2>
+                            <GoogleLogout
+                                clientId={GOOGLE_CLIENT_ID}
+                                buttonText="Logout"
+                                onLogoutSuccess={this.props.handleLogout}
+                                onFailure={(err) => console.log(err)}
+                                className="ms-auto"
+                            />
+                        </nav>
+                    </div>
+                    ) : (
+                        <div className="opening container px-4 py-5 my-5 text-center">
+                            <i className="fs-1 bi bi-geo-alt"></i>
+                            <h1 className="display-5 fw-bold">enroute</h1>
+                            <div className="col-md-6 mx-auto lead mb-4">
+                                <p>check to see if it will rain or snow any point on your route</p>
+                            </div>
+                            <div className="d-grid gap-2 d-sm-flex justify-content-sm-center">
+                                <GoogleLogin
+                                    clientId={GOOGLE_CLIENT_ID}
+                                    buttonText="Sign in with Google"
+                                    onSuccess={this.props.handleLogin}
+                                    onFailure={(err) => console.log(err)}
+                                />
+                            </div>
                         </div>
-                    </div> :
-                    <div></div>
-                }
+                    )}
+                <main>
+                    {this.props.userId ?
+                        <div className="main-body container">
+                            <TripInput
+                                updateStops={this.updateStops}
+                                updateStart={this.updateStart}
+                                stops={this.state.stops}
+                                start={this.state.start}
+                            />
+                            <WeatherDisplay notableStops={this.state.notableStops}/>
+                            <div className="mapContainer">
+                                <Map stops={this.state.stops} updateDirections={this.updateRoute}/>
+                            </div>
+                        </div> :
+                        <div></div>
+                    }
+                </main>
             </>
         );
     }

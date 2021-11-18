@@ -86,18 +86,28 @@ class TripInput extends Component {
         let twoWeeksString = twoWeeks.toISOString().split(".")[0];
 
         return (
-            <div className="user-input">
-                <p>Start Date of Trip:</p>
-                <input type="datetime-local" id="start" name="trip-start"
-                       value={chosenStartString.substring(0,chosenStartString.length-3)}
-                       min={todayString.substring(0,todayString.length-3)}
-                       max={twoWeeksString.substring(0,twoWeeksString.length-3)}
-                       onChange={this.props.updateStart}
-                   />
-                <br></br>
-                <button onClick={this.addStop}>Add stop</button>
-                {searchBoxList}
-                <button onClick={() => this.props.updateStops(this.state.waypoints)}>Submit!</button>
+            <div className="user-input container">
+                <div className="init-input">
+                    <div className="row">
+                        <p className="col-md-auto col-sm-auto col-lg-auto fs-5 fw-bold">
+                            Start Date of Trip:
+                        </p>
+                        <input type="datetime-local" id="start" name="trip-start"
+                               className="col"
+                               value={chosenStartString.substring(0,chosenStartString.length-3)}
+                               min={todayString.substring(0,todayString.length-3)}
+                               max={twoWeeksString.substring(0,twoWeeksString.length-3)}
+                               onChange={this.props.updateStart}
+                           />
+                    </div>
+                    <button className="btn btn-primary" onClick={this.addStop}>
+                        Add stop
+                    </button>
+                </div>
+                <div className="row">{searchBoxList}</div>
+                <button className="btn btn-primary" onClick={() => this.props.updateStops(this.state.waypoints)}>
+                    Submit!
+                </button>
             </div>);
     }
 }

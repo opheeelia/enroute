@@ -1,4 +1,55 @@
+body{
+    background-color: var(--base);
+    padding-top: 65px;
+}
+
+h1, h2, i{
+    color: var(--brown);
+}
+
+p{
+    color: var(--grey);
+    margin: 10px;
+}
+
+.user-input input{
+    width: 100%;
+    text-align: center;
+    border-color: transparent;
+    border-radius: 5px;
+}
+
+.navbar{
+    background-color: var(--base);
+}
+
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type=number] {
+  -moz-appearance: textfield;
+}
+
+.opening{
+
+}
+
+.card{
+    border-radius: 10px;
+    border-color: transparent;
+    background-color: var(--yellow);
+}
+
 mapContainer{
     width: 100vw;
     height: 100vh;
+}
+
+.btn-primary{
+    background-color: var(--green) !important;
 }

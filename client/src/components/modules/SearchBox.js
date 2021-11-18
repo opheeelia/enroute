@@ -29,6 +29,11 @@ class SearchBox extends Component{
         this.props.handleSelect(this.props.stopKey, address);
     };
 
+    handleDurationChange = (newDur) => {
+        this.setState({durationHr: newDur});
+        this.props.handleSetDuration(this.props.stopKey, newDur);
+    };
+
     incrDuration = () => {
         let newValue = this.state.durationHr + 1;
         this.setState({durationHr: newValue});
@@ -47,17 +52,12 @@ class SearchBox extends Component{
 
     render(){
         return(
-            // <Autocomplete
-            //     style={{width: '90%'}}
-            //     onPlaceSelected={this.onPlaceSelected}
-            //     types={['(regions)']}
-            ///>
-            <div className="search-box">
-                {/*{console.log(this.state.address)}*/}
+            <div className="search-box card col input-group m-2 p-3">
                 <PlacesAutocomplete
                     value={this.state.address}
                     onChange={this.handleChange}
                     onSelect={this.handleSelect}
+                    className=""
                 >
                     {({ getInputProps, suggestions, getSuggestionItemProps, loading }) => (
                       <div>
@@ -92,8 +92,19 @@ class SearchBox extends Component{
                       </div>
                     )}
                 </PlacesAutocomplete>
-                <p>{this.state.durationHr}</p> <button onClick={this.incrDuration}>+</button> <button onClick={this.decrDuration}>-</button>
-                <button onClick={()=>this.props.deleteStop(this.props.stopKey)}>Remove Stop</button>
+                <div className="duration-input input-group align-items-center">
+                    <label className="mx-2">Duration</label>
+                    <button className="btn btn-outline-secondary" onClick={this.decrDuration}>-</button>
+                    <input type="number" className="form-control" id="duration-input"
+                           aria-label="Duration in hours spent at this location"
+                           value={this.state.durationHr}
+                           onChange={this.handleDurationChange}
+                    />
+                    <button className="btn btn-outline-secondary" onClick={this.incrDuration}>+</button>
+                </div>
+                <button className="btn ms-auto" onClick={()=>this.props.deleteStop(this.props.stopKey)}>
+                    <i className="bi bi-x-circle"></i>
+                </button>
             </div>
         );
     }
