@@ -41,7 +41,7 @@ class SearchBox extends Component{
     };
 
     decrDuration = () => {
-        let newValue = Math.max(1, this.state.durationHr - 1);
+        let newValue = Math.max(0, this.state.durationHr - 1);
         this.setState({durationHr: newValue});
         this.props.handleSetDuration(this.props.stopKey, newValue);
     };
@@ -51,6 +51,19 @@ class SearchBox extends Component{
     // };
 
     render(){
+
+        let durationInput = (this.props.stopKey == 0) ? <div></div> :
+            <div className="duration-input input-group align-items-center">
+                <label className="mx-2">Duration (hrs)</label>
+                <button className="btn btn-outline-secondary" onClick={this.decrDuration}>-</button>
+                <input type="number" className="form-control" id="duration-input"
+                       aria-label="Duration in hours spent at this location"
+                       value={this.state.durationHr}
+                       onChange={this.handleDurationChange}
+                />
+                <button className="btn btn-outline-secondary" onClick={this.incrDuration}>+</button>
+            </div>;
+
         return(
             <div className="search-box card col input-group m-2 p-3">
                 <PlacesAutocomplete
@@ -68,17 +81,17 @@ class SearchBox extends Component{
                           })}
                         />
                         <div className="autocomplete-dropdown-container">
-                          {loading && <div>Loading...</div>}
-                          {suggestions.map(suggestion => {
+                          {loading && <div className="dropdown-suggestion">Loading...</div>}
+                          {suggestions.map((suggestion, i) => {
                             const className = suggestion.active
-                              ? 'suggestion-item--active'
-                              : 'suggestion-item';
+                              ? 'suggestion-item--active dropdown-suggestion'
+                              : 'suggestion-item dropdown-suggestion';
                             // inline style for demonstration purpose
                             const style = suggestion.active
                               ? { backgroundColor: '#fafafa', cursor: 'pointer' }
                               : { backgroundColor: '#ffffff', cursor: 'pointer' };
                             return (
-                              <div key={suggestion}
+                              <div key={i}
                                 {...getSuggestionItemProps(suggestion, {
                                   className,
                                   style,
@@ -92,16 +105,7 @@ class SearchBox extends Component{
                       </div>
                     )}
                 </PlacesAutocomplete>
-                <div className="duration-input input-group align-items-center">
-                    <label className="mx-2">Duration</label>
-                    <button className="btn btn-outline-secondary" onClick={this.decrDuration}>-</button>
-                    <input type="number" className="form-control" id="duration-input"
-                           aria-label="Duration in hours spent at this location"
-                           value={this.state.durationHr}
-                           onChange={this.handleDurationChange}
-                    />
-                    <button className="btn btn-outline-secondary" onClick={this.incrDuration}>+</button>
-                </div>
+                {durationInput}
                 <button className="btn ms-auto" onClick={()=>this.props.deleteStop(this.props.stopKey)}>
                     <i className="bi bi-x-circle"></i>
                 </button>

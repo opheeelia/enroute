@@ -53,3 +53,15 @@ mapContainer{
 .btn-primary{
     background-color: var(--green) !important;
 }
+
+.autocomplete-dropdown-container{
+    width: 100%;
+    position: absolute;
+    z-index: 1000;
+    background-color: white;
+    border-radius: 5px;
+}
+
+.dropdown-suggestion{
+    margin: 0px 15px;
+}
