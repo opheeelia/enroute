@@ -73,10 +73,11 @@ router.get("/weather", async (req, res) => {
                 newWeather.save();
             });
             // extract the appropriate date and send TODO: assert that index > 0 and < 16
-            let index = new Date(Date.now()).getDate() - desiredDt.getDate();
+            let index = desiredDt.getDate() - new Date(Date.now()).getDate();
             // console.log("first api")
             res.send({snow: resp.data[index].snow, precip: resp.data[index].precip});
         }).catch((error) => {
+            console.log(error)
             // try other api
             fetch(`https://api.openweathermap.org/data/2.5/onecall?lat=${lat}&lon=${lon}&exclude=current,minutely,hourly&appid=${process.env.OPEN_WEATHER_API_KEY}`)
                 .then(convertToJSON).then((resp) => {
@@ -97,9 +98,10 @@ router.get("/weather", async (req, res) => {
 
                     // extract the appropriate date and send TODO: assert that index > 0 and < 7
                     let index = new Date(Date.now()).getDate() - desiredDt.getDate();
-                    console.log("second api")
+                    // console.log("second api")
                     res.send({snow: resp.daily[index].snow, precip: resp.daily[index].rain});
                 }).catch((error) => {
+                    console.log(error)
                     res.status(500).send({error: "Woops! Something went wrong"});
                 });
         });
