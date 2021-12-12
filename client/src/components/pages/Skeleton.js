@@ -33,7 +33,7 @@ class Skeleton extends Component {
     }
 
     updateStart = (newStart) => {
-        this.setState({start: newStart.target.value.split(".")[0]});
+        this.setState({start: (new Date(newStart.target.value.split(".")[0])).valueOf()});
     }
 
     updateStops = (newState) => {
