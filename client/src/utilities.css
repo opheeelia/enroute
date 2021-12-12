@@ -21,11 +21,14 @@
 :root {
   --brown: #804134;
   --red: #d5674c;
-  --grey: #5C6061;
-  --yellow: #F8D680;
+  --grey: #5c6061;
+  --yellow: #f8d680;
   --green: #93b1af;
   --white: #fff;
-  --base: #F5F0E0;
+  --base: #f5f0e0;
+  --rain: #9ddbff;
+  --snow: #c3f4fe;
+  --neutral: #e8e1c9;
   /*--blue: #3B727C;*/
   /*--green: #82A775;*/
   /*--brown: #64513B;*/

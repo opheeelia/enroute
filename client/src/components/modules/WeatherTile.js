@@ -1,5 +1,7 @@
 import React, { Component } from "react";
-import {getWeather} from "../../utilities";
+import RainIcon from "../../public/rain.svg";
+import SnowIcon from "../../public/snow.svg";
+import { getWeather } from "../../utilities";
 
 class WeatherTile extends Component{
     constructor(props) {
@@ -19,11 +21,20 @@ class WeatherTile extends Component{
     }
 
     render() {
+        let date = new Date(this.props.loc.elapsedSec * 1000);
         return (
-            <div>
-                <p>{this.props.loc.city + ", " + this.props.loc.state + ", " + this.props.loc.country + ": " + new Date(this.props.loc.elapsedSec * 1000).toString()}</p>
-                <p>snow {this.state.snow} </p>
-                <p>rain {this.state.precip}</p>
+            <div className="weather-card row">
+                <img className="col-1" src={this.state.snow ? SnowIcon : (this.state.precip ? RainIcon : "")}/>
+                <div className="col">
+                    <div className="row">
+                        <p className="col"><b>{this.props.loc.city + ", " + this.props.loc.state + ", " + this.props.loc.country}</b></p>
+                        <p className="col">{date.getMonth()}/{date.getDate()}/{date.getFullYear()}</p>
+                    </div>
+                    <div className="row">
+                        <p className="col">Snow: {this.state.snow} mm</p>
+                        <p className="col">Rain: {this.state.precip} mm</p>
+                    </div>
+                </div>
             </div>
         );
     }

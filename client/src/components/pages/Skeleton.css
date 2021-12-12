@@ -1,26 +1,32 @@
-body{
-    background-color: var(--base);
-    padding-top: 65px;
+body {
+  background-color: var(--base);
+  padding-top: 65px;
 }
 
-h1, h2, i{
-    color: var(--brown);
+h1,
+h2,
+i {
+  color: var(--brown);
 }
 
-p{
-    color: var(--grey);
-    margin: 10px;
+p {
+  color: var(--grey);
+  margin: 10px;
 }
 
-.user-input input{
-    width: 100%;
-    text-align: center;
-    border-color: transparent;
-    border-radius: 5px;
+img {
+  width: 50px;
 }
 
-.navbar{
-    background-color: var(--base);
+.user-input input {
+  width: 100%;
+  text-align: center;
+  border-color: transparent;
+  border-radius: 5px;
+}
+
+.navbar {
+  background-color: var(--base);
 }
 
 /* Chrome, Safari, Edge, Opera */
@@ -31,37 +37,44 @@ input::-webkit-inner-spin-button {
 }
 
 /* Firefox */
-input[type=number] {
+input[type="number"] {
   -moz-appearance: textfield;
 }
 
-.opening{
-
+.opening {
 }
 
-.card{
-    border-radius: 10px;
-    border-color: transparent;
-    background-color: var(--yellow);
+.card {
+  border-radius: 10px;
+  border-color: transparent;
+  background-color: var(--yellow);
 }
 
-mapContainer{
-    width: 100vw;
-    height: 100vh;
+mapContainer {
+  width: 100vw;
+  height: 100vh;
 }
 
-.btn-primary{
-    background-color: var(--green) !important;
+.btn-primary {
+  background-color: var(--green) !important;
 }
 
-.autocomplete-dropdown-container{
-    width: 100%;
-    position: absolute;
-    z-index: 1000;
-    background-color: white;
-    border-radius: 5px;
+.autocomplete-dropdown-container {
+  width: 100%;
+  position: absolute;
+  z-index: 1000;
+  background-color: white;
+  border-radius: 5px;
 }
 
-.dropdown-suggestion{
-    margin: 0px 15px;
+.dropdown-suggestion {
+  margin: 0px 15px;
+}
+
+.weather-card {
+  border-radius: 10px;
+  border-color: transparent;
+  background-color: var(--neutral);
+  margin: 1em 0em;
+  padding: 1em;
 }

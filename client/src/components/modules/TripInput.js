@@ -100,14 +100,18 @@ class TripInput extends Component {
                                onChange={this.props.updateStart}
                            />
                     </div>
-                    <button className="btn btn-primary" onClick={this.addStop}>
-                        Add stop
-                    </button>
+                    <div className="row justify-content-center">
+                        <button className="btn btn-primary col-3 mt-3" onClick={this.addStop}>
+                            Add stop
+                        </button>
+                    </div>
                 </div>
                 <div className="row">{searchBoxList}</div>
-                <button className="btn btn-primary" onClick={() => this.props.updateStops(this.state.waypoints)}>
-                    Submit!
-                </button>
+                <div className="row justify-content-center">
+                    <button className="btn btn-primary" onClick={() => this.props.updateStops(this.state.waypoints)}>
+                        Submit!
+                    </button>
+                </div>
             </div>);
     }
 }
