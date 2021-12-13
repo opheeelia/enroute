@@ -47,14 +47,14 @@ class SearchBox extends Component{
         this.props.handleSetDuration(this.props.stopKey, newValue);
     };
 
-    getLocation = (event) => {
+    getLocation = async (event) => {
       if ("geolocation" in navigator){
         navigator.geolocation.getCurrentPosition(async (position) => {
-          getAddressFromLatLng(
+          let address = await getAddressFromLatLng(
             parseFloat(position.coords.latitude),
-            parseFloat(position.coords.longitude),
-            this.handleSelect
+            parseFloat(position.coords.longitude)
           );
+          this.handleSelect(address);
         });
       }
     }

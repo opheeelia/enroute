@@ -137,13 +137,11 @@ export function removeConsecutiveDuplicates(notableStops) {
 }
 
 export function getAddressFromLatLng(lat, lon, callback) {
-  Geocode.fromLatLng(lat, lon).then((resp) => {
+  return Geocode.fromLatLng(lat, lon).then((resp) => {
     if (resp.status == "OK") {
-      resp.results.find((item) => {
-        if (item.types.includes("locality")) {
-          callback(item.formatted_address);
-        }
-      });
+      // TODO: error if not found
+      let item = resp.results.find((item) => item.types.includes("locality"));
+      return item.formatted_address;
     }
   });
 }
