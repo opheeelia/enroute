@@ -83,9 +83,7 @@ router.get("/weather", async (req, res) => {
                     // cache all responses into the database
                     resp.daily.forEach((data)=> {
                         const newWeather = new Weather({
-                            city: "",
-                            state: "",
-                            country: "",
+                            address: "",
                             lat: Math.round(lat * 100) / 100,
                             lon: Math.round(lon * 100) / 100,
                             datetime: new Date(data.dt), //TODO: include time as well
