@@ -8,7 +8,7 @@ import "./Skeleton.css";
 import TripInput from "../modules/TripInput";
 import Geocode from "react-geocode";
 import WeatherDisplay from "../modules/WeatherDisplay";
-import {copyStops, removeConsecutiveDuplicates, sameCity} from "../../utilities";
+import {copyStops, getAddressFromLatLng, removeConsecutiveDuplicates, sameCity} from "../../utilities";
 
 
 // //TODO: REPLACE WITH YOUR OWN CLIENT_ID
@@ -50,35 +50,20 @@ class Skeleton extends Component {
             let routeStops = await leg.steps.reduce(async (stopList, step) => {
                 stopList = await stopList;
                 let prevStep = stopList[stopList.length -1];
-                return await Geocode.fromLatLng(step.end_location.toJSON().lat, step.end_location.toJSON().lng).then(response => {
-                        let city = "";
-                        let state = "";
-                        let country = "";
-                        response.results[0].address_components.map((info) => {
-                            if (info.types.includes("administrative_area_level_1")) {
-                                state = info.short_name;
-                            } else if (info.types.includes("locality") || info.types.includes("sublocality")) {
-                                city = info.long_name;
-                            } else if (info.types.includes("country")) {
-                                country = info.short_name;
-                            }
-                        });
-                        if (city != "" && state != "" && country != "") {
-                            stopList.push({
-                                address: [city, state, country].join(", "),
-                                // city: city,
-                                // state: state,
-                                // country: country,
-                                lat: step.end_location.toJSON().lat,
-                                lng: step.end_location.toJSON().lng,
-                                elapsedSec: step.duration.value + prevStep.elapsedSec
-                            });
-                        }
-                        return stopList;
-                    },
-                    error => {
-                        console.error(error);
-                    });
+                await getAddressFromLatLng(step.end_location.toJSON().lat,
+                                     step.end_location.toJSON().lng,
+                                     (address) => {
+                                        if (address != "") {
+                                            stopList.push({
+                                                address: address,
+                                                lat: step.end_location.toJSON().lat,
+                                                lng: step.end_location.toJSON().lng,
+                                                elapsedSec: step.duration.value + prevStep.elapsedSec
+                                            });
+                                        }
+                                     }
+                                    );
+                return stopList;
             }, [{elapsedSec: prevLegElapsedSec}]);
 
             index++;

@@ -50,11 +50,11 @@ class SearchBox extends Component{
     getLocation = async (event) => {
       if ("geolocation" in navigator){
         navigator.geolocation.getCurrentPosition(async (position) => {
-          let address = await getAddressFromLatLng(
+          getAddressFromLatLng(
             parseFloat(position.coords.latitude),
-            parseFloat(position.coords.longitude)
-          );
-          this.handleSelect(address);
+            parseFloat(position.coords.longitude),
+            this.handleSelect
+          );          
         });
       }
     }

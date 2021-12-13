@@ -138,8 +138,24 @@ export function getAddressFromLatLng(lat, lon, callback) {
   return Geocode.fromLatLng(lat, lon).then((resp) => {
     if (resp.status == "OK") {
       // TODO: error if not found
+      // let city = "";
+      // let state = "";
+      // let country = "";
+      // resp.results[0].address_components.map((info) => {
+      //     if (info.types.includes("administrative_area_level_1")) {
+      //         state = info.short_name;
+      //     } else if (info.types.includes("locality") || info.types.includes("sublocality")) {
+      //         city = info.long_name;
+      //     } else if (info.types.includes("country")) {
+      //         country = info.short_name;
+      //     }
+      // });
+      // callback([city, state, country].join(", "));
       let item = resp.results.find((item) => item.types.includes("locality"));
-      return item.formatted_address;
+      if (!item){
+        item = resp.results.find((item) => item.types.includes("administrative_area_level_2"));
+      }
+      callback(item.formatted_address);
     }
   });
 }
