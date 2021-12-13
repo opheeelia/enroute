@@ -119,9 +119,7 @@ export function copyStops(stops) {
 }
 
 export function sameCity(city1, city2) {
-  return (
-    city1.city === city2.city && city1.state === city2.state && city1.country === city2.country
-  );
+  return city1.address === city2.address;
 }
 
 // mutates notableStops to remove duplicates

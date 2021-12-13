@@ -50,7 +50,7 @@ router.get("/weather", async (req, res) => {
     let desiredDt = new Date(parseInt(req.query.dateTime));
     let cachedData = await findWeather(lat, lon, desiredDt);
     if (cachedData != null){
-        // console.log("cache hit at " + cachedData.lat + ", " + cachedData.lon)
+        // console.log("cache hit at " + cachedData.lat + ", " + cachedData.lon + " for " + cachedData.address)
         res.send({snow: cachedData.snow, precip: cachedData.precip});
         return;
     }
@@ -58,12 +58,11 @@ router.get("/weather", async (req, res) => {
 
     fetch(`https://api.weatherbit.io/v2.0/forecast/daily?key=${process.env.WEATHER_API_KEY}&lat=${lat}&lon=${lon}`)
         .then(convertToJSON).then((resp) => {
+            let address = [resp.city_name, resp.state_code, resp.country_code].join(", ");
             // cache all responses into the database
             resp.data.forEach((data)=>{
                 const newWeather = new Weather({
-                    city: data.city_name,
-                    state: data.state_code,
-                    country: data.country_code,
+                    address: address,
                     lat: Math.round(lat * 100) / 100,
                     lon: Math.round(lon * 100) / 100,
                     datetime: new Date(data.valid_date), //TODO: include time as well

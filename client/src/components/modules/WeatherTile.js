@@ -27,7 +27,7 @@ class WeatherTile extends Component{
                 <img className="col-1" src={this.state.snow ? SnowIcon : (this.state.precip ? RainIcon : "")}/>
                 <div className="col">
                     <div className="row">
-                        <p className="col"><b>{this.props.loc.city + ", " + this.props.loc.state + ", " + this.props.loc.country}</b></p>
+                        <p className="col"><b>{this.props.loc.address}</b></p>
                         <p className="col">{date.getMonth()}/{date.getDate()}/{date.getFullYear()}</p>
                     </div>
                     <div className="row">

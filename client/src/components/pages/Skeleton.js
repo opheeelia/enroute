@@ -65,9 +65,10 @@ class Skeleton extends Component {
                         });
                         if (city != "" && state != "" && country != "") {
                             stopList.push({
-                                city: city,
-                                state: state,
-                                country: country,
+                                address: [city, state, country].join(", "),
+                                // city: city,
+                                // state: state,
+                                // country: country,
                                 lat: step.end_location.toJSON().lat,
                                 lng: step.end_location.toJSON().lng,
                                 elapsedSec: step.duration.value + prevStep.elapsedSec
