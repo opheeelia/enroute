@@ -7,8 +7,8 @@
  * These functions return promises, which means you should use ".then" on them.
  * e.g. get('/api/foo', { bar: 0 }).then(res => console.log(res))
  */
-const util = require('util');
-
+import Geocode from "react-geocode";
+const util = require("util");
 
 // ex: formatParams({ some_key: "some_value", a: "b"}) => "some_key=some_value&a=b"
 function formatParams(params) {
@@ -66,83 +66,95 @@ export function post(endpoint, params = {}) {
 
 // Check if two arrays are equal
 export function arrayEquals(a, b) {
-    return Array.isArray(a) &&
-        Array.isArray(b) &&
-        a.length === b.length &&
-        a.every((val, index) => {
-             if (typeof val === 'object' && typeof b[index] === 'object') {
-                return objectEquals(val, b[index]);
-             } else if (Array.isArray(val) && Array.isArray(b[index])) {
-                 return arrayEquals(val, b[index]);
-             } else {
-                 return val == b[index];
-             }
-        });
+  return (
+    Array.isArray(a) &&
+    Array.isArray(b) &&
+    a.length === b.length &&
+    a.every((val, index) => {
+      if (typeof val === "object" && typeof b[index] === "object") {
+        return objectEquals(val, b[index]);
+      } else if (Array.isArray(val) && Array.isArray(b[index])) {
+        return arrayEquals(val, b[index]);
+      } else {
+        return val == b[index];
+      }
+    })
+  );
 }
 
 // Check object equality
 export function objectEquals(a, b) {
-    // TODO: wrap in try catch for error in type
-    if (a == null && b == null) {
-        return true;
-    } else if (a == null || b == null) {
-        return false;
-    }
-
-
-    let aProps = Object.getOwnPropertyNames(a);
-    let bProps = Object.getOwnPropertyNames(b);
-
-    if (aProps.length != bProps.length) {
-        return false;
-    }
-
-    for (let i = 0; i < aProps.length; i++) {
-        let propName = aProps[i];
-        if (Array.isArray(a[propName]) && Array.isArray(b[propName])) {
-            return arrayEquals(a[propName], b[propName]);
-        } else if (typeof a[propName] === 'object' && typeof b[propName] === 'object') {
-            return objectEquals(a[propName], b[propName]);
-        } else if (a[propName] !== b[propName]) {
-            return false;
-        }
-    }
+  // TODO: wrap in try catch for error in type
+  if (a == null && b == null) {
     return true;
+  } else if (a == null || b == null) {
+    return false;
+  }
+
+  let aProps = Object.getOwnPropertyNames(a);
+  let bProps = Object.getOwnPropertyNames(b);
+
+  if (aProps.length != bProps.length) {
+    return false;
+  }
+
+  for (let i = 0; i < aProps.length; i++) {
+    let propName = aProps[i];
+    if (Array.isArray(a[propName]) && Array.isArray(b[propName])) {
+      return arrayEquals(a[propName], b[propName]);
+    } else if (typeof a[propName] === "object" && typeof b[propName] === "object") {
+      return objectEquals(a[propName], b[propName]);
+    } else if (a[propName] !== b[propName]) {
+      return false;
+    }
+  }
+  return true;
 }
 
-export function copyStops(stops){
-    if (Array.isArray(stops)){
-        return stops.map(a => ({...a}));
-    }
-    console.log("SERVER ERROR: Trying to make a deep copy of a not-array");
+export function copyStops(stops) {
+  if (Array.isArray(stops)) {
+    return stops.map((a) => ({ ...a }));
+  }
+  console.log("SERVER ERROR: Trying to make a deep copy of a not-array");
 }
 
 export function sameCity(city1, city2) {
-    return city1.city === city2.city && city1.state === city2.state && city1.country === city2.country;
+  return (
+    city1.city === city2.city && city1.state === city2.state && city1.country === city2.country
+  );
 }
 
 // mutates notableStops to remove duplicates
-export function removeConsecutiveDuplicates(notableStops){
-    let currIndex = 0;
-    while (currIndex < notableStops.length - 1){
-        if (sameCity(notableStops[currIndex], notableStops[currIndex+1])){
-            notableStops.splice(currIndex, 1);
-        } else {
-            currIndex++;
-        }
+export function removeConsecutiveDuplicates(notableStops) {
+  let currIndex = 0;
+  while (currIndex < notableStops.length - 1) {
+    if (sameCity(notableStops[currIndex], notableStops[currIndex + 1])) {
+      notableStops.splice(currIndex, 1);
+    } else {
+      currIndex++;
     }
+  }
+}
+
+export function getAddressFromLatLng(lat, lon, callback) {
+  Geocode.fromLatLng(lat, lon).then((resp) => {
+    if (resp.status == "OK") {
+      resp.results.find((item) => {
+        if (item.types.includes("locality")) {
+          callback(item.formatted_address);
+        }
+      });
+    }
+  });
 }
 
 // Calls the backend getWeather endpoint. returns {snow: #, precip: #}
-export function getWeather(lat, lon, dateTime, callback){
-    get("/api/weather",
-        {
-                    lat: Math.round(lat * 100) / 100,
-                    lon: Math.round(lon * 100) / 100,
-                    dateTime: dateTime
-                })
-        .then(r =>{
-            callback(r);
-        });
-
+export function getWeather(lat, lon, dateTime, callback) {
+  get("/api/weather", {
+    lat: Math.round(lat * 100) / 100,
+    lon: Math.round(lon * 100) / 100,
+    dateTime: dateTime,
+  }).then((r) => {
+    callback(r);
+  });
 }

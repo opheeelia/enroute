@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 // import Autocomplete from "react-google-autocomplete";
 import PlacesAutocomplete from 'react-places-autocomplete';
+import { getAddressFromLatLng } from "../../utilities";
 
 class SearchBox extends Component{
 
@@ -46,13 +47,29 @@ class SearchBox extends Component{
         this.props.handleSetDuration(this.props.stopKey, newValue);
     };
 
+    getLocation = (event) => {
+      if ("geolocation" in navigator){
+        navigator.geolocation.getCurrentPosition(async (position) => {
+          getAddressFromLatLng(
+            parseFloat(position.coords.latitude),
+            parseFloat(position.coords.longitude),
+            this.handleSelect
+          );
+        });
+      }
+    }
+
     // onPlaceSelected = place => {
     //     this.setState({address: place['formatted_address']})
     // };
 
     render(){
 
-        let durationInput = (this.props.stopKey == 0) ? <div></div> :
+        let durationInput = (this.props.stopKey == 0) ? 
+            <div className="m-auto">
+              <button className="btn btn-outline-dark" onClick={this.getLocation}>Use my location</button>
+            </div>
+            :
             <div className="duration-input input-group align-items-center">
                 <label className="mx-2">Duration (hrs)</label>
                 <button className="btn btn-outline-secondary" onClick={this.decrDuration}>-</button>
@@ -65,7 +82,7 @@ class SearchBox extends Component{
             </div>;
 
         return(
-            <div className="search-box card col input-group m-2 p-3">
+            <div className="search-box card col input-group m-2 p-3 gap-3">
                 <PlacesAutocomplete
                     value={this.state.address}
                     onChange={this.handleChange}
