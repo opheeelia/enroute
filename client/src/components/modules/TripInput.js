@@ -12,7 +12,7 @@ class TripInput extends Component {
         this.state = {
             defaultDurationHr: 24,
             stopCounter: 2,
-            waypoints: copyStops(this.props.stops),
+            waypoints: copyStops(this.props.stops), // just to get initial empty stops
         };
     }
 
@@ -21,6 +21,21 @@ class TripInput extends Component {
           defaultDurationHr: newDefaultDuration
       });
       //TODO: update all of the stops to have default value
+    };
+
+    submitStops = (newStops) => {
+        // TODO: assert that newStops and this.state.waypoints are the same
+        // validate the locations (if non-empty)
+        let valStops = copyStops(newStops);
+        let valid = true;
+        newStops.forEach((element, i) => {
+            if (element.address.length == 0){
+                valStops[i].invalid = true;
+                valid = false;
+            }
+        });
+        this.setState({waypoints: valStops});
+        if (valid) this.props.updateStops(newStops);
     };
 
     addStop = () => {
@@ -73,6 +88,7 @@ class TripInput extends Component {
                        handleSelect={this.handleSelect}
                        handleSetDuration={this.handleSetDuration}
                        durationHr={stop.durationHr}
+                       invalid={stop.invalid}
             />));
 
         let today = new Date(Date.now());
@@ -108,7 +124,7 @@ class TripInput extends Component {
                 </div>
                 <div className="row">{searchBoxList}</div>
                 <div className="row justify-content-center">
-                    <button className="btn btn-primary" onClick={() => this.props.updateStops(this.state.waypoints)}>
+                    <button className="btn btn-primary" onClick={() => this.submitStops(this.state.waypoints)}>
                         Submit!
                     </button>
                 </div>

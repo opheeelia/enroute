@@ -78,3 +78,9 @@ mapContainer {
   margin: 1em 0em;
   padding: 1em;
 }
+
+.error{
+  font-size: 0.75em;
+  color: var(--red);
+  text-align: center;
+}
