@@ -123,8 +123,9 @@ class SearchBox extends Component{
                       </div>
                     )}
                 </PlacesAutocomplete>
-                {this.props.invalid ? <div className="error">Please enter a valid location</div> : null}
+                {this.props.locInvalid ? <div className="error">Please enter a valid location</div> : null}
                 {durationInput}
+                {this.props.durInvalid ? <div className="error">Duration requires predicting too far into the future! Try decreasing duration, removing stops, or starting earlier.</div> : null}
                 <button className="btn ms-auto" onClick={()=>this.props.deleteStop(this.props.stopKey)}>
                     <i className="bi bi-x-circle"></i>
                 </button>

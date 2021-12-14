@@ -6,6 +6,7 @@ import {copyStops} from "../../utilities";
 class TripInput extends Component {
 
     static MAX_STOPS = 8;
+    static MAX_FUTURE_HRS = 7 * 24;
 
     constructor(props) {
         super(props);
@@ -27,11 +28,21 @@ class TripInput extends Component {
         // TODO: assert that newStops and this.state.waypoints are the same
         // validate the locations (if non-empty)
         let valStops = copyStops(newStops);
+        let elapsedHr = 0;
         let valid = true;
         newStops.forEach((element, i) => {
-            if (element.address.length == 0){
-                valStops[i].invalid = true;
+            elapsedHr += element.durationHr;
+            if (elapsedHr >= TripInput.MAX_FUTURE_HRS){
+                valStops[i].durInvalid = true;
                 valid = false;
+            } else {
+                valStops[i].durInvalid = false;
+            }
+            if (element.address.length == 0){
+                valStops[i].locInvalid = true;
+                valid = false;
+            } else {
+                valStops[i].locInvalid = false;
             }
         });
         this.setState({waypoints: valStops});
@@ -88,7 +99,8 @@ class TripInput extends Component {
                        handleSelect={this.handleSelect}
                        handleSetDuration={this.handleSetDuration}
                        durationHr={stop.durationHr}
-                       invalid={stop.invalid}
+                       locInvalid={stop.locInvalid}
+                       durInvalid={stop.durInvalid}
             />));
 
         let today = new Date(Date.now());
