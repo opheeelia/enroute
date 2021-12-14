@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import RainIcon from "../../public/rain.svg";
 import SnowIcon from "../../public/snow.svg";
-import { getWeather } from "../../utilities";
+import { getWeather, objectEquals } from "../../utilities";
 
 class WeatherTile extends Component{
     constructor(props) {
@@ -13,6 +13,14 @@ class WeatherTile extends Component{
     }
 
     componentDidMount(){
+        getWeather(this.props.loc.lat, this.props.loc.lng, this.props.loc.elapsedSec * 1000, this.updateWeatherTile);
+    }
+
+    shouldComponentUpdate(prevProps, prevState){
+        return !objectEquals(this.props.loc, prevProps.loc) || !objectEquals(this.state, prevState);
+    }
+
+    componentDidUpdate(){
         getWeather(this.props.loc.lat, this.props.loc.lng, this.props.loc.elapsedSec * 1000, this.updateWeatherTile);
     }
 

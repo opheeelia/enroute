@@ -95,8 +95,10 @@ router.get("/weather", async (req, res) => {
 
                     // extract the appropriate date and send TODO: assert that index > 0 and < 7
                     let index = new Date(Date.now()).getDate() - desiredDt.getDate();
+                    let snow = resp.daily[index].snow ? resp.daily[index].snow : 0;
+                    let precip = resp.daily[index].rain ? resp.daily[index].rain : 0;
                     // console.log("second api")
-                    res.send({snow: resp.daily[index].snow, precip: resp.daily[index].rain});
+                    res.send({snow: snow, precip: precip});
                 }).catch((error) => {
                     console.log(error)
                     res.status(500).send({error: "Woops! Something went wrong"});
