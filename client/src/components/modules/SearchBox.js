@@ -30,7 +30,8 @@ class SearchBox extends Component{
         this.props.handleSelect(this.props.stopKey, address);
     };
 
-    handleDurationChange = (newDur) => {
+    handleDurationChange = (e) => {
+        let newDur = parseInt(e.target.value);
         this.setState({durationHr: newDur});
         this.props.handleSetDuration(this.props.stopKey, newDur);
     };
