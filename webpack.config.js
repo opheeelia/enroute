@@ -22,8 +22,8 @@ const outputDir = path.resolve(__dirname, "client", "dist");
 const Dotenv = require("dotenv-webpack");
 const webpack = require("webpack");
 
-module.exports = (env) => {
-  return env == "production"
+module.exports = (env, argv) => {
+  return argv.mode == "production"
     ? {
         entry: ["@babel/polyfill", entryFile],
         output: {
