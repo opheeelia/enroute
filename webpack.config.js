@@ -19,59 +19,125 @@
 const path = require("path");
 const entryFile = path.resolve(__dirname, "client", "src", "index.js");
 const outputDir = path.resolve(__dirname, "client", "dist");
-const Dotenv = require('dotenv-webpack');
+const Dotenv = require("dotenv-webpack");
 const webpack = require("webpack");
 
-module.exports = {
-  entry: ["@babel/polyfill", entryFile],
-  output: {
-    path: outputDir,
-    publicPath: "/",
-    filename: "bundle.js",
-  },
-  devtool: "inline-source-map",
-  module: {
-    rules: [
-      {
-        test: /\.(js|jsx)$/,
-        loader: "babel-loader",
-        exclude: /node_modules/,
-      },
-      {
-        test: /\.(scss|css)$/,
-        use: [
-          {
-            loader: "style-loader",
-          },
-          {
-            loader: "css-loader",
-          },
+module.exports = (env) => {
+  return env == "production"
+    ? {
+        entry: ["@babel/polyfill", entryFile],
+        output: {
+          path: outputDir,
+          publicPath: "/",
+          filename: "bundle.js",
+        },
+        devtool: "inline-source-map",
+        module: {
+          rules: [
+            {
+              test: /\.(js|jsx)$/,
+              loader: "babel-loader",
+              exclude: /node_modules/,
+            },
+            {
+              test: /\.(scss|css)$/,
+              use: [
+                {
+                  loader: "style-loader",
+                },
+                {
+                  loader: "css-loader",
+                },
+              ],
+            },
+            {
+              test: /\.(png|svg|jpg|gif)$/,
+              use: [
+                {
+                  loader: "url-loader",
+                },
+              ],
+            },
+          ],
+        },
+        resolve: {
+          extensions: ["*", ".js", ".jsx"],
+        },
+        plugins: [
+          new webpack.DefinePlugin({
+            "process.env": {
+              REACT_APP_GOOGLE_API_KEY: JSON.stringify(process.env.REACT_APP_GOOGLE_API_KEY),
+              WEATHER_API_KEY: JSON.stringify(process.env.WEATHER_API_KEY),
+              OPEN_WEATHER_API_KEY: JSON.stringify(process.env.OPEN_WEATHER_API_KEY),
+              ATLAS_SRV: JSON.stringify(process.env.ATLAS_SRV),
+              GOOGLE_CLIENT_ID: JSON.stringify(process.env.GOOGLE_CLIENT_ID),
+            },
+          }),
         ],
-      },
-      {
-        test: /\.(png|svg|jpg|gif)$/,
-        use: [
-          {
-            loader: "url-loader",
+        devServer: {
+          historyApiFallback: true,
+          contentBase: "./client/dist",
+          hot: true,
+          proxy: {
+            "/api": "http://localhost:3000",
+            "/socket.io/*": {
+              target: "http://localhost:3000",
+              ws: true,
+            },
           },
-        ],
-      },
-    ],
-  },
-  resolve: {
-    extensions: ["*", ".js", ".jsx"],
-  },
-  plugins: [new Dotenv, new webpack.HotModuleReplacementPlugin()],
-  devServer: {
-    historyApiFallback: true,
-    contentBase: "./client/dist",
-    hot: true,
-    proxy: {
-      "/api": "http://localhost:3000",
-      "/socket.io/*": {
-        target: "http://localhost:3000",
-        ws: true,
-      },
-    },
-  },
+        },
+      }
+    : {
+        entry: ["@babel/polyfill", entryFile],
+        output: {
+          path: outputDir,
+          publicPath: "/",
+          filename: "bundle.js",
+        },
+        devtool: "inline-source-map",
+        module: {
+          rules: [
+            {
+              test: /\.(js|jsx)$/,
+              loader: "babel-loader",
+              exclude: /node_modules/,
+            },
+            {
+              test: /\.(scss|css)$/,
+              use: [
+                {
+                  loader: "style-loader",
+                },
+                {
+                  loader: "css-loader",
+                },
+              ],
+            },
+            {
+              test: /\.(png|svg|jpg|gif)$/,
+              use: [
+                {
+                  loader: "url-loader",
+                },
+              ],
+            },
+          ],
+        },
+        resolve: {
+          extensions: ["*", ".js", ".jsx"],
+        },
+        plugins: [new Dotenv(), new webpack.HotModuleReplacementPlugin()],
+        devServer: {
+          historyApiFallback: true,
+          contentBase: "./client/dist",
+          hot: true,
+          proxy: {
+            "/api": "http://localhost:3000",
+            "/socket.io/*": {
+              target: "http://localhost:3000",
+              ws: true,
+            },
+          },
+        },
+      };
 };
