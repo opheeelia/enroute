@@ -1,6 +1,7 @@
 import React, {Component} from "react";
 import SearchBox from "../modules/SearchBox";
 import {geocodeByAddress, getLatLng} from "react-places-autocomplete";
+import Geocode from "react-geocode";
 import {copyStops} from "../../utilities";
 
 class TripInput extends Component {
@@ -13,7 +14,7 @@ class TripInput extends Component {
         this.state = {
             defaultDurationHr: 24,
             stopCounter: 2,
-            waypoints: copyStops(this.props.stops), // just to get initial empty stops
+            waypoints: copyStops(this.props.stops), // just to get initial empty stops TODO: change to not depend on props
         };
     }
 
@@ -24,29 +25,35 @@ class TripInput extends Component {
       //TODO: update all of the stops to have default value
     };
 
-    submitStops = (newStops) => {
-        // TODO: assert that newStops and this.state.waypoints are the same
+    submitStops = () => {
         // validate the locations (if non-empty)
-        let valStops = copyStops(newStops);
         let elapsedHr = 0;
         let valid = true;
-        newStops.forEach((element, i) => {
+        let valStops = this.state.waypoints.map(async (element, i) => {
             elapsedHr += element.durationHr;
             if (elapsedHr >= TripInput.MAX_FUTURE_HRS){
-                valStops[i].durInvalid = true;
+                element.durInvalid = true;
                 valid = false;
             } else {
-                valStops[i].durInvalid = false;
+                element.durInvalid = false;
             }
             if (element.address.length == 0){
-                valStops[i].locInvalid = true;
+                element.locInvalid = true;
                 valid = false;
             } else {
-                valStops[i].locInvalid = false;
+                await Geocode.fromAddress(element.address).then((e)=>{
+                    element.locInvalid = false;
+                }).catch((e)=>{
+                    element.locInvalid = true;
+                    valid = false;
+                });
             }
+            return element;
         });
-        this.setState({waypoints: valStops});
-        if (valid) this.props.updateStops(newStops);
+        Promise.all(valStops).then((stops) => {
+            this.setState({waypoints: stops});
+        });
+        if (valid) this.props.updateStops(this.state.waypoints);
     };
 
     addStop = () => {
@@ -72,8 +79,15 @@ class TripInput extends Component {
         this.setState({waypoints: newStops});
     };
 
+    handleChange = (boxKey, address) => {
+        let origStops = copyStops(this.state.waypoints);
+        origStops[boxKey].address = address;
+        origStops[boxKey].latlng = null;
+        this.setState({waypoints: origStops});
+    }
+
     handleSelect = (boxKey, address) => {
-        let origStops = this.state.waypoints;
+        let origStops = copyStops(this.state.waypoints);
         geocodeByAddress(address)
             .then(results => getLatLng(results[0]))
             .then(latLng => {
@@ -85,17 +99,17 @@ class TripInput extends Component {
     };
 
     handleSetDuration = (boxKey, durationHr) => {
-        let stops = this.state.waypoints;
+        let stops = copyStops(this.state.waypoints);
         stops[boxKey].durationHr = durationHr;
         this.setState({waypoints: stops});
     };
 
     render() {
-
         let searchBoxList = this.state.waypoints.map((stop, key) => (
             <SearchBox key={key} id={stop.id} stopKey={key}
                        address={stop.address}
                        deleteStop={this.deleteStop}
+                       handleChange={this.handleChange}
                        handleSelect={this.handleSelect}
                        handleSetDuration={this.handleSetDuration}
                        durationHr={stop.durationHr}
@@ -136,7 +150,7 @@ class TripInput extends Component {
                 </div>
                 <div className="row">{searchBoxList}</div>
                 <div className="row justify-content-center">
-                    <button className="btn btn-primary" onClick={() => this.submitStops(this.state.waypoints)}>
+                    <button className="btn btn-primary" onClick={this.submitStops}>
                         Submit!
                     </button>
                 </div>

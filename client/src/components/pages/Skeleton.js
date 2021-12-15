@@ -21,8 +21,8 @@ class Skeleton extends Component {
 
         // Initialize Default State
         this.state = {
-            stops: [{id: 0, address: "", latlng: new google.maps.LatLng(41.8507300, -87.6512600), durationHr: 0}, //TODO: always ensure the first one has duration 0
-                {id: 1, address: "", latlng: new google.maps.LatLng(41.8525800, -87.6514100), durationHr: 24}],
+            stops: [{id: 0, address: "", latlng: null, durationHr: 0}, //TODO: always ensure the first one has duration 0
+                {id: 1, address: "", latlng: null, durationHr: 24}],
             notableStops: [],
             start: Date.now().valueOf()
         };

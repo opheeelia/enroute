@@ -5,46 +5,26 @@ import { getAddressFromLatLng } from "../../utilities";
 
 class SearchBox extends Component{
 
-    constructor(props) {
-        super(props);
-        this.state = {
-            address: this.props.address,
-            durationHr: this.props.durationHr
-        };
-    }
-
-    componentDidUpdate(prevProps){
-        if(this.props.address != prevProps.address){
-            this.setState({
-                address: this.props.address,
-            });
-        }
-    }
-
     handleChange = address => {
-        this.setState({address: address });
+        this.props.handleChange(this.props.stopKey, address);
     };
 
     handleSelect = address => {
-        this.setState({address: address});
         this.props.handleSelect(this.props.stopKey, address);
     };
 
     handleDurationChange = (e) => {
         let newDur = parseInt(e.target.value);
-        this.setState({durationHr: newDur});
         this.props.handleSetDuration(this.props.stopKey, newDur);
     };
 
     incrDuration = () => {
-        let newValue = this.state.durationHr + 1;
-        this.setState({durationHr: newValue});
+        let newValue = this.props.durationHr + 1;
         this.props.handleSetDuration(this.props.stopKey, newValue);
     };
 
     decrDuration = () => {
-        let newValue = Math.max(0, this.state.durationHr - 1);
-        this.setState({durationHr: newValue});
+        let newValue = Math.max(0, this.props.durationHr - 1);
         this.props.handleSetDuration(this.props.stopKey, newValue);
     };
 
@@ -76,7 +56,7 @@ class SearchBox extends Component{
                 <button className="btn btn-outline-secondary" onClick={this.decrDuration}>-</button>
                 <input type="number" className="form-control" id="duration-input"
                        aria-label="Duration in hours spent at this location"
-                       value={this.state.durationHr}
+                       value={this.props.durationHr}
                        onChange={this.handleDurationChange}
                 />
                 <button className="btn btn-outline-secondary" onClick={this.incrDuration}>+</button>
@@ -85,7 +65,7 @@ class SearchBox extends Component{
         return(
             <div className="search-box card col input-group m-2 p-3 gap-3">
                 <PlacesAutocomplete
-                    value={this.state.address}
+                    value={this.props.address}
                     onChange={this.handleChange}
                     onSelect={this.handleSelect}
                     className=""
