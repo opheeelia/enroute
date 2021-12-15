@@ -41,12 +41,14 @@ class TripInput extends Component {
                 element.locInvalid = true;
                 valid = false;
             } else {
-                await Geocode.fromAddress(element.address).then((e)=>{
-                    element.locInvalid = false;
-                }).catch((e)=>{
-                    element.locInvalid = true;
-                    valid = false;
-                });
+                element.locInvalid = false;
+                // TODO: find a way to validate addresses
+                // await Geocode.fromAddress(element.address).then((e)=>{
+                //     element.locInvalid = false;
+                // }).catch((e)=>{
+                //     element.locInvalid = true;
+                //     valid = false;
+                // });
             }
             return element;
         });
