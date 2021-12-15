@@ -15,6 +15,7 @@ class TripInput extends Component {
             defaultDurationHr: 24,
             stopCounter: 2,
             waypoints: copyStops(this.props.stops), // just to get initial empty stops TODO: change to not depend on props
+            stopErrorMsg: ""
         };
     }
 
@@ -53,7 +54,7 @@ class TripInput extends Component {
             return element;
         });
         Promise.all(valStops).then((stops) => {
-            this.setState({waypoints: stops});
+            this.setState({waypoints: stops, stopErrorMsg: ""});
         });
         if (valid) this.props.updateStops(this.state.waypoints);
     };
@@ -67,6 +68,8 @@ class TripInput extends Component {
             });
         } else {
             // TODO: popup message to tell user max stops reached
+            this.setState({stopErrorMsg: `Maximum of ${TripInput.MAX_STOPS} stops reached.`});
+            // document.getElementById("stops-error-msg").innerHTML = `Maximum of ${TripInput.MAX_STOPS} stops reached.`;
         }
     };
 
@@ -82,6 +85,7 @@ class TripInput extends Component {
             this.setState({waypoints: newStops});
         } else {
             // TODO: pop-up that tells user a minimum of 2 stops are required
+            this.setState({stopErrorMsg: "Must have at least 2 stops"});
         }
     };
 
@@ -152,6 +156,7 @@ class TripInput extends Component {
                         <button className="btn btn-primary col-3 mt-3" onClick={this.addStop}>
                             Add stop
                         </button>
+                        <div id="stops-error-msg" className="error">{this.state.stopErrorMsg}</div>
                     </div>
                 </div>
                 <div className="row">{searchBoxList}</div>
