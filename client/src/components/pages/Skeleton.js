@@ -11,8 +11,7 @@ import WeatherDisplay from "../modules/WeatherDisplay";
 import {copyStops, getAddressFromLatLng, removeConsecutiveDuplicates, sameCity} from "../../utilities";
 
 
-// //TODO: REPLACE WITH YOUR OWN CLIENT_ID
-const GOOGLE_CLIENT_ID = "121479668229-t5j82jrbi9oejh7c8avada226s75bopn.apps.googleusercontent.com";
+const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
 
 class Skeleton extends Component {
     constructor(props) {

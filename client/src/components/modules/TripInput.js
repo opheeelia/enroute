@@ -76,9 +76,13 @@ class TripInput extends Component {
     // };
 
     deleteStop = stopKey => {
-        let newStops = [...this.state.waypoints];
-        newStops.splice(stopKey, 1);
-        this.setState({waypoints: newStops});
+        if (this.state.waypoints > 2){
+            let newStops = [...this.state.waypoints];
+            newStops.splice(stopKey, 1);
+            this.setState({waypoints: newStops});
+        } else {
+            // TODO: pop-up that tells user a minimum of 2 stops are required
+        }
     };
 
     handleChange = (boxKey, address) => {
